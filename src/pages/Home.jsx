@@ -213,11 +213,11 @@ export default function Home() {
                             </div>
                             <div className="grid grid-cols-2 gap-8 mt-12 border-t border-[#b88f42]/20 pt-12">
                                 <div>
-                                    <span className="block text-3xl font-bold text-[#b88f42] mb-1 font-serif">24k+</span>
+                                    <span className="block text-3xl font-bold text-[#b88f42] mb-1 font-serif">Coming Soon!</span>
                                     <span className="text-sm uppercase tracking-widest opacity-60 text-slate-400">Published Verses</span>
                                 </div>
                                 <div>
-                                    <span className="block text-3xl font-bold text-[#b88f42] mb-1 font-serif">180</span>
+                                    <span className="block text-3xl font-bold text-[#b88f42] mb-1 font-serif">Coming Soon!</span>
                                     <span className="text-sm uppercase tracking-widest opacity-60 text-slate-400">Global Authors</span>
                                 </div>
                             </div>
