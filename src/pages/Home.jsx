@@ -1,226 +1,333 @@
-// src/pages/Home.jsx
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import { FaTwitter, FaInstagram, FaFacebookF, FaLinkedinIn } from 'react-icons/fa';
-// Import the PoemModal component
-import PoemModal from '../components/PoemModal'; 
+import PoemModal from '../components/PoemModal';
+import PoemCard from '../components/PoemCard';
+import { motion } from 'framer-motion'; // 1. Import Framer Motion
 
-function Hero() {
-  return (
-    <section className="relative overflow-hidden min-h-screen flex items-center">
-      {/* decorative background image with stronger overlay */}
-      <div className="absolute inset-0 -z-10">
-        <div className="w-full h-full bg-cover bg-center" style={{
-          backgroundImage: `linear-gradient(rgba(15, 23, 42, 0.8), rgba(15, 23, 42, 0.8)), url('https://images.unsplash.com/photo-1588260692987-01360da8185b?q=80&w=826&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`
-        }} />
-      </div>
+// Background pattern for Hero
+const manuscriptStyle = {
+    backgroundImage: 'radial-gradient(circle at 2px 2px, rgba(184, 143, 66, 0.05) 1px, transparent 0)',
+    backgroundSize: '40px 40px',
+};
 
-      <div className="container-max py-24 md:py-32">
-        <div className="grid lg:grid-cols-12 gap-12 items-center">
-          {/* Main Text Content */}
-          <div className="text-white lg:col-span-7">
-            <h1 className="text-5xl sm:text-6xl font-extrabold leading-tight tracking-tight drop-shadow-lg" style={{ color: 'var(--accent-light)' }}>
-              PoetryHub — <span className="text-white font-normal">where words breathe</span>
-            </h1>
-            <p className="mt-6 text-xl text-white/80 max-w-2xl font-serif">
-              A curated space to discover famous poems and fresh voices. Read, feel, and return — daily.
-            </p>
+// --- ANIMATION UTILITIES ---
 
-            <blockquote className="mt-8 border-l-4 pl-4 text-xl italic text-white/90" style={{ borderColor: 'var(--accent)' }}>
-              "A poem is a small (or large) machine made of words — built to move the reader." — Anonymous
-            </blockquote>
+// 1. Text Animation Component (Splits text into letters)
+const StaggeredText = ({ text, className, delay = 0 }) => {
+    // Split text into characters, preserving spaces
+    const letters = Array.from(text);
 
-            <div className="mt-10 flex flex-col sm:flex-row gap-4">
-              <a href="/poems" className="px-8 py-3 rounded-full bg-[var(--accent)] text-slate-900 font-semibold shadow-xl hover:bg-[var(--accent-light)] transition duration-300">
-                Browse Poems
-              </a>
-              <a href="#contact" className="px-8 py-3 rounded-full border border-[var(--accent)] text-white/90 hover:bg-white/10 transition duration-300">
-                Contact Us
-              </a>
-            </div>
-          </div>
+    const container = {
+        hidden: { opacity: 0 },
+        visible: (i = 1) => ({
+            opacity: 1,
+            transition: { staggerChildren: 0.03, delayChildren: delay * i },
+        }),
+    };
 
-          {/* Featured Card (Image/Quote) */}
-          <div className="hidden lg:block lg:col-span-5">
-            <div className="card-surface rounded-2xl p-6 shadow-2xl transition duration-500 hover:shadow-white/10">
-              <img src="https://images.unsplash.com/photo-1643377542165-9818a038c880?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="poetry" className="rounded-xl w-full object-cover h-[400px]" />
-              <div className="mt-5 text-white/90">
-                <h3 className="text-xl font-semibold">Today's Featured Thought</h3>
-                <p className="mt-2 text-sm text-[var(--muted)] font-serif">"Poetry is life itself — it starts with words and becomes experience."</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
+    const child = {
+        visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+                type: "spring",
+                damping: 12,
+                stiffness: 100,
+            },
+        },
+        hidden: {
+            opacity: 0,
+            y: 20, // Letters slide up
+            transition: {
+                type: "spring",
+                damping: 12,
+                stiffness: 100,
+            },
+        },
+    };
 
-function About() {
-  return (
-    <section className="container-max py-20">
-      <div className="card-surface rounded-2xl p-10 grid md:grid-cols-2 gap-12 items-start shadow-xl">
-        <div>
-          <h2 className="text-3xl font-bold" style={{ color: 'var(--accent)' }}>About PoetryHub</h2>
-          <p className="mt-4 text-[var(--muted)] text-lg leading-relaxed">
-            PoetryHub is a small, focused library created to make poems discoverable. Our homepage highlights the most-read (featured) works, while the poems page keeps an ever-growing list of submissions by the admin.
-          </p>
-          <ul className="mt-6 text-[var(--muted)] list-disc list-inside space-y-3 pl-4">
-            <li className="text-white/90">Curated selection of classic and contemporary works</li>
-            <li className="text-white/90">Daily unique visitor analytics (private & aggregated)</li>
-            <li className="text-white/90">Admin-managed content via a secure login</li>
-          </ul>
-        </div>
+    return (
+        <motion.div
+            style={{ display: "inline-block", overflow: "hidden" }} // Ensures text wraps correctly
+            variants={container}
+            initial="hidden"
+            animate="visible"
+            className={className}
+        >
+            {letters.map((letter, index) => (
+                <motion.span variants={child} key={index} style={{ display: "inline-block" }}>
+                    {letter === " " ? "\u00A0" : letter}
+                </motion.span>
+            ))}
+        </motion.div>
+    );
+};
 
-        <div className="flex flex-col gap-6">
-          <div className="p-5 rounded-xl border border-[var(--card-border)] bg-[var(--input-bg)]">
-            <h4 className="font-semibold text-lg text-white">Our Vision</h4>
-            <p className="mt-2 text-sm text-[var(--muted)]">To create a calm, beautiful place online where poems are read slowly and shared widely.</p>
-          </div>
+// 2. Scroll Reveal Component (Fades in elements when scrolled into view)
+const RevealOnScroll = ({ children, delay = 0, width = "100%" }) => {
+    return (
+        <motion.div
+            variants={{
+                hidden: { opacity: 0, y: 75 },
+                visible: { opacity: 1, y: 0 },
+            }}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-100px" }} // Triggers when 100px into view
+            transition={{ duration: 0.8, delay: delay, ease: "easeOut" }}
+            style={{ width }}
+        >
+            {children}
+        </motion.div>
+    );
+};
 
-          <div className="p-5 rounded-xl border border-[var(--card-border)] bg-[var(--input-bg)]">
-            <h4 className="font-semibold text-lg text-white">Contribute</h4>
-            <p className="mt-2 text-sm text-[var(--muted)]">Currently only admin can add poems; reach out via contact below to apply for contributor access.</p>
-          </div>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ⚠️ MODIFIED: Now accepts a click handler prop
-function Featured({ featured, onOpenPoem }) {
-  return (
-    <section className="container-max py-20">
-      <h2 className="text-3xl font-bold mb-8 text-center" style={{ color: 'var(--accent)' }}>Featured Poems</h2>
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        {featured.length === 0 && <div className="text-[var(--muted)] col-span-full text-center">No featured poems yet.</div>}
-        {featured.map(p => (
-          <article 
-            key={p._id} 
-            // 💡 Clicking the whole card opens the modal
-            onClick={() => onOpenPoem(p)} 
-            className="card-surface rounded-xl p-5 shadow-md hover:shadow-xl hover:scale-[1.02] transition duration-300 cursor-pointer"
-          >
-            {p.imageFileId && (
-              <img src={`${import.meta.env.VITE_API_BASE || 'http://localhost:4000/api'}/uploads/${p.imageFileId}`} alt={p.title} className="w-full h-48 object-cover rounded-lg mb-4 border border-[var(--card-border)]" />
-            )}
-            <h3 className="font-bold text-lg text-white truncate">{p.title}</h3>
-            <div className="text-sm text-[var(--accent)] font-serif mt-1">{p.author}</div>
-            <p className="text-xs text-[var(--muted)] mt-3 line-clamp-3 leading-relaxed" style={{whiteSpace: 'pre-wrap'}}>{p.body?.slice(0,120)}{p.body && p.body.length>120? '...' : ''}</p>
-            <div className="mt-4 flex items-center justify-between border-t border-[var(--card-border)] pt-3">
-              <div className="text-xs text-[var(--muted)]">Views: {p.views || 0}</div>
-              {/* 💡 MODIFIED: Changed the <a> to an action link that stops event propagation, preventing double click, and calls the handler */}
-              <button 
-                onClick={(e) => { e.stopPropagation(); onOpenPoem(p); }} 
-                className="text-sm font-semibold hover:text-[var(--accent-light)]" 
-                style={{color: 'var(--accent)'}}
-              >
-                Read Poem &rarr;
-              </button>
-            </div>
-          </article>
-        ))}
-      </div>
-    </section>
-  );
-}
 
 export default function Home() {
-  const [featured, setFeatured] = useState([]);
-  const [contact, setContact] = useState({ name:'', email:'', message:'' });
-  const [sending, setSending] = useState(false);
-  const [status, setStatus] = useState(null);
-  // 💡 NEW STATE: To track which poem is selected for the modal
-  const [selectedPoem, setSelectedPoem] = useState(null); 
+    const [featured, setFeatured] = useState([]);
+    const [selectedPoem, setSelectedPoem] = useState(null);
 
-  useEffect(() => {
-    api.get('/featured?limit=8').then(r => setFeatured(r.data.poems)).catch(err => {
-      console.warn(err);
-      setFeatured([]);
-    });
-  }, []);
+    // Contact State
+    const [contact, setContact] = useState({ name: '', email: '', message: '' });
+    const [sending, setSending] = useState(false);
+    const [status, setStatus] = useState(null);
 
-  async function handleContact(e) {
-    e.preventDefault();
-    setSending(true);
-    setStatus(null);
-    try {
-      // this will attempt to post to /api/contact (you can implement it later)
-      await api.post('/contact', contact).catch(() => {
-        // if backend doesn't have /contact, just simulate success
-      });
-      setStatus({ ok: true, msg: 'Message sent — we will get back to you.'});
-      setContact({ name:'', email:'', message:'' });
-    } catch (err) {
-      setStatus({ ok: false, msg: 'Send failed. Please email admin@example.com' });
-    } finally {
-      setSending(false);
+    useEffect(() => {
+        api.get('/featured?limit=3').then(r => setFeatured(r.data.poems)).catch(() => setFeatured([]));
+    }, []);
+
+    async function handleContact(e) {
+        e.preventDefault();
+        setSending(true);
+        setStatus(null);
+        try {
+            await api.post('/contact', contact).catch(() => { });
+            setStatus({ ok: true, msg: 'Message sent.' });
+            setContact({ name: '', email: '', message: '' });
+        } catch (err) {
+            setStatus({ ok: false, msg: 'Failed to send.' });
+        } finally {
+            setSending(false);
+        }
     }
-  }
 
+    return (
+        <div className="bg-[#1a1f23] text-[#e6e6e6] font-sans selection:bg-[#b88f42]/30">
 
-  return (
-    <div className="text-white">
-      <Hero />
+            {/* --- HERO SECTION --- */}
+            <section className="relative min-h-[85vh] flex items-center justify-center overflow-hidden px-6 w-full" style={manuscriptStyle}>
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-[#1a1f23]/20 to-[#1a1f23] pointer-events-none"></div>
 
-      <About />
-      
-      {/* 💡 MODIFIED: Pass the setSelectedPoem handler to Featured */}
-      <Featured featured={featured} onOpenPoem={setSelectedPoem} />
+                <div className="relative z-10 max-w-4xl text-center space-y-8">
+                    {/* Animated Header */}
+                    <div className="flex flex-col items-center">
+                        <StaggeredText
+                            text="PoetryHub —"
+                            className="font-serif text-5xl md:text-7xl lg:text-8xl font-black leading-tight tracking-tight text-white block mb-2"
+                            delay={0.1}
+                        />
+                        <motion.span
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            transition={{ delay: 1.5, duration: 1.5 }} // Fades in smoothly after letters are done
+                            className="italic text-[#b88f42] font-serif text-4xl md:text-5xl lg:text-6xl"
+                        >
+                            where words breathe
+                        </motion.span>
+                    </div>
 
-      <section id="contact" className="container-max py-20">
-        <div className="card-surface rounded-2xl p-10 grid md:grid-cols-2 gap-12 shadow-xl">
-          <div>
-            <h2 className="text-3xl font-bold" style={{ color: 'var(--accent)' }}>Get In Touch</h2>
-            <p className="mt-3 text-lg text-[var(--muted)]">Want to contribute, share feedback, or just say hello? Send us a message.</p>
+                    {/* Subtext Fade In */}
+                    <motion.p
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ delay: 2, duration: 0.8 }}
+                        className="max-w-2xl mx-auto text-lg md:text-xl font-light text-slate-400 leading-relaxed"
+                    >
+                        A sanctuary for digital verse, where every syllable finds its home in a distraction-free environment. Rediscover the art of reading.
+                    </motion.p>
 
-            <div className="mt-8 space-y-4 text-white">
-              <div className="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[var(--accent)]" viewBox="0 0 20 20" fill="currentColor"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"/></svg>
-                <a href="mailto:karankaul02@gmail.com" className="text-white/90 hover:text-[var(--accent-light)] transition">karankaul02@gmail.com</a>
-              </div>
-              <div className="flex items-center gap-3">
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-[var(--accent)]" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd"/></svg>
-                <span className="text-white/90">Find me soon with my Poems</span>
-              </div>
-            </div>
-          </div>
+                    {/* Button Fade In */}
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ delay: 2.5, duration: 0.5 }}
+                        className="pt-6"
+                    >
+                        <a href="/poems" className="inline-block bg-[#b88f42] text-[#1a1f23] px-10 py-4 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-xl shadow-[#b88f42]/10">
+                            Explore Collected Poems
+                        </a>
+                    </motion.div>
+                </div>
 
-          <form onSubmit={handleContact} className="space-y-5">
-            <input className="input-field w-full p-3 rounded-lg" placeholder="Your name" value={contact.name} onChange={e=>setContact({...contact, name:e.target.value})} required />
-            <input className="input-field w-full p-3 rounded-lg" placeholder="Email" type="email" value={contact.email} onChange={e=>setContact({...contact, email:e.target.value})} required />
-            <textarea className="input-field w-full p-3 rounded-lg" rows={6} placeholder="Message" value={contact.message} onChange={e=>setContact({...contact, message:e.target.value})} required />
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
-              <button className="px-6 py-3 rounded-full bg-[var(--accent)] text-slate-900 font-semibold hover:bg-[var(--accent-light)] transition disabled:opacity-50" disabled={sending}>{sending ? 'Sending...' : 'Send Message'}</button>
-              {status && (
-                <div className={`text-sm font-medium ${status.ok ? 'text-emerald-400' : 'text-rose-400'}`}>{status.msg}</div>
-              )}
-            </div>
-          </form>
+                {/* Decorative Blurred Blobs (Floating Animation) */}
+                <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 8, repeat: Infinity }}
+                    className="absolute -top-24 -left-24 size-96 bg-[#b88f42]/5 blur-[120px] rounded-full"
+                ></motion.div>
+                <motion.div
+                    animate={{ scale: [1, 1.2, 1], opacity: [0.5, 0.8, 0.5] }}
+                    transition={{ duration: 10, repeat: Infinity, delay: 1 }}
+                    className="absolute -bottom-24 -right-24 size-96 bg-[#b88f42]/5 blur-[120px] rounded-full"
+                ></motion.div>
+            </section>
+
+            {/* --- FEATURED SECTION --- */}
+            <section id="featured" className="py-32 w-full">
+                <div className="max-w-7xl mx-auto px-6">
+                    <RevealOnScroll>
+                        <div className="flex flex-col md:flex-row md:items-end justify-between mb-16 gap-6">
+                            <div className="space-y-4">
+                                <span className="text-[#b88f42] font-bold tracking-[0.2em] uppercase text-xs">Curated Selection</span>
+                                <h2 className="font-serif text-4xl md:text-5xl font-bold text-white">Featured Poems</h2>
+                            </div>
+                            <a href="/poems" className="text-[#b88f42] hover:underline flex items-center gap-2 group">
+                                View full archive <span className="group-hover:translate-x-1 transition-transform">→</span>
+                            </a>
+                        </div>
+                    </RevealOnScroll>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        {featured.length === 0 && <div className="text-slate-500 italic col-span-full">Loading selections...</div>}
+                        {featured.map((p, index) => (
+                            // Staggered Cards Reveal
+                            <RevealOnScroll key={p._id} delay={index * 0.2}>
+                                <PoemCard poem={p} onOpen={() => setSelectedPoem(p)} />
+                            </RevealOnScroll>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            {/* --- VISION SECTION --- */}
+            <section id="vision" className="bg-white/[0.02] py-32 w-full">
+                <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-2 gap-20 items-center">
+                    <div className="order-2 lg:order-1">
+                        <RevealOnScroll>
+                            <h2 className="font-serif text-4xl md:text-5xl font-bold mb-8 leading-tight text-white">
+                                Our vision for the <span className="italic text-[#b88f42]">digital manuscript</span>
+                            </h2>
+                            <div className="space-y-6 text-lg text-slate-300 font-light leading-relaxed">
+                                <p>We believe that poetry deserves more than a social media feed. It deserves stillness, focus, and a space that respects the weight of every word.</p>
+                                <p>PoetryHub was founded on the principle of minimal intervention. Our interface is designed to disappear, leaving only the rhythm of the text and the connection between author and reader.</p>
+                            </div>
+                            <div className="grid grid-cols-2 gap-8 mt-12 border-t border-[#b88f42]/20 pt-12">
+                                <div>
+                                    <span className="block text-3xl font-bold text-[#b88f42] mb-1 font-serif">24k+</span>
+                                    <span className="text-sm uppercase tracking-widest opacity-60 text-slate-400">Published Verses</span>
+                                </div>
+                                <div>
+                                    <span className="block text-3xl font-bold text-[#b88f42] mb-1 font-serif">180</span>
+                                    <span className="text-sm uppercase tracking-widest opacity-60 text-slate-400">Global Authors</span>
+                                </div>
+                            </div>
+                        </RevealOnScroll>
+                    </div>
+                    <div className="order-1 lg:order-2">
+                        <RevealOnScroll delay={0.2}>
+                            <div className="relative">
+                                <motion.div
+                                    animate={{ opacity: [0.3, 0.6, 0.3] }}
+                                    transition={{ duration: 4, repeat: Infinity }}
+                                    className="absolute inset-0 bg-[#b88f42]/20 blur-3xl rounded-full scale-75"
+                                ></motion.div>
+                                <img
+                                    alt="Vision"
+                                    className="relative z-10 rounded-2xl grayscale hover:grayscale-0 transition-all duration-1000 shadow-2xl"
+                                    src="https://images.unsplash.com/photo-1695544939051-9f28a1f9eb6c?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D"
+                                />
+                            </div>
+                        </RevealOnScroll>
+                    </div>
+                </div>
+            </section>
+
+            {/* --- CONTACT SECTION --- */}
+            <section id="contact" className="py-32 bg-[#1a1f23] w-full">
+                <div className="max-w-3xl mx-auto px-6">
+                    <RevealOnScroll>
+                        <div className="text-center mb-16 space-y-4">
+                            <h2 className="font-serif text-4xl font-bold text-white">Get In Touch</h2>
+                            <p className="text-slate-500 font-light">Inquiries for collaborations, readings, or technical support.</p>
+                        </div>
+                    </RevealOnScroll>
+
+                    <RevealOnScroll delay={0.2}>
+                        <form onSubmit={handleContact} className="space-y-6">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="space-y-2">
+                                    <label className="text-xs uppercase tracking-widest font-bold opacity-60 text-[#b88f42]">Full Name</label>
+                                    <input
+                                        className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 transition-colors outline-none text-white placeholder-slate-600"
+                                        placeholder="John Keats"
+                                        value={contact.name}
+                                        onChange={e => setContact({ ...contact, name: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="text-xs uppercase tracking-widest font-bold opacity-60 text-[#b88f42]">Email Address</label>
+                                    <input
+                                        className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 transition-colors outline-none text-white placeholder-slate-600"
+                                        placeholder="john@keats.com"
+                                        type="email"
+                                        value={contact.email}
+                                        onChange={e => setContact({ ...contact, email: e.target.value })}
+                                        required
+                                    />
+                                </div>
+                            </div>
+                            <div className="space-y-2">
+                                <label className="text-xs uppercase tracking-widest font-bold opacity-60 text-[#b88f42]">Message</label>
+                                <textarea
+                                    className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 transition-colors outline-none resize-none text-white placeholder-slate-600"
+                                    placeholder="The words I seek to share..."
+                                    rows="4"
+                                    value={contact.message}
+                                    onChange={e => setContact({ ...contact, message: e.target.value })}
+                                    required
+                                ></textarea>
+                            </div>
+                            <div className="pt-6 text-center">
+                                <button
+                                    className="bg-[#b88f42] text-[#1a1f23] px-12 py-4 rounded-lg font-bold hover:shadow-lg hover:shadow-[#b88f42]/20 transition-all disabled:opacity-50"
+                                    disabled={sending}
+                                >
+                                    {sending ? 'Sending...' : 'Send Message'}
+                                </button>
+                                {status && (
+                                    <div className={`mt-4 text-sm font-medium ${status.ok ? 'text-green-400' : 'text-red-400'}`}>{status.msg}</div>
+                                )}
+                            </div>
+                        </form>
+                    </RevealOnScroll>
+                </div>
+            </section>
+
+            {/* --- FOOTER --- */}
+            <footer className="py-20 border-t border-white/5 bg-[#1a1f23] w-full">
+                <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row justify-between items-center gap-10">
+                    <div className="flex items-center gap-2 text-[#b88f42]">
+                        <div className="size-5">
+                            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
+                            </svg>
+                        </div>
+                        <span className="font-serif font-bold text-lg">PoetryHub</span>
+                    </div>
+                    <div className="flex gap-8 text-sm font-medium opacity-60 text-[#e6e6e6]">
+                        <a className="hover:text-[#b88f42] transition-colors" href="#">Twitter</a>
+                        <a className="hover:text-[#b88f42] transition-colors" href="#">Instagram</a>
+                        <a className="hover:text-[#b88f42] transition-colors" href="#">Privacy</a>
+                        <a className="hover:text-[#b88f42] transition-colors" href="#">Terms</a>
+                    </div>
+                    <p className="text-sm opacity-40 font-light text-[#e6e6e6]">© {new Date().getFullYear()} PoetryHub. All verses belong to their respective authors.</p>
+                </div>
+            </footer>
+
+            {selectedPoem && (
+                <PoemModal poem={selectedPoem} onClose={() => setSelectedPoem(null)} />
+            )}
         </div>
-      </section>
-
-      <footer className="mt-16 border-t border-[var(--card-border)] py-10">
-        <div className="container-max flex flex-col md:flex-row items-center justify-between gap-6">
-          <div>
-            <div className="text-2xl font-bold" style={{ color: 'var(--accent)' }}>PoetryHub</div>
-            <div className="text-sm text-[var(--muted)] mt-1">© {new Date().getFullYear()} — Read. Breathe. Return. by Karan</div>
-          </div>
-
-          <div className="flex items-center gap-4 text-white/70">
-            <a className="p-3 rounded-full hover:bg-white/10 hover:text-white transition" href="#" aria-label="Twitter"><FaTwitter /></a>
-            <a className="p-3 rounded-full hover:bg-white/10 hover:text-white transition" href="#" aria-label="Instagram"><FaInstagram /></a>
-            <a className="p-3 rounded-full hover:bg-white/10 hover:text-white transition" href="#" aria-label="Facebook"><FaFacebookF /></a>
-            <a className="p-3 rounded-full hover:bg-white/10 hover:text-white transition" href="#" aria-label="LinkedIn"><FaLinkedinIn /></a>
-          </div>
-        </div>
-      </footer>
-      
-      {/* 💡 NEW: Render PoemModal if a poem is selected */}
-      {selectedPoem && (
-        <PoemModal poem={selectedPoem} onClose={() => setSelectedPoem(null)} />
-      )}
-    </div>
-  );
+    );
 }

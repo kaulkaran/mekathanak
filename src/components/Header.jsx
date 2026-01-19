@@ -7,7 +7,6 @@ export default function Header() {
   const nav = useNavigate();
   const location = useLocation();
   const { user, isAuthenticated, loading, logout } = useAuth();
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
 
   async function handleLogout() {
@@ -20,139 +19,66 @@ export default function Header() {
     }
   }
 
-  const handleMobileNavClick = (e) => {
-    if (e.target.tagName === 'A' || e.target.tagName === 'BUTTON') {
-      setIsMobileMenuOpen(false);
-    }
-  };
-
-  const getNavLinkClass = (path, isAnchor = false) => {
-    if (isAnchor) {
-      const isActiveAnchor = location.hash === path;
-      return isActiveAnchor ? 'text-white font-bold' : 'text-[var(--muted)] hover:text-white transition';
-    }
-
-    if (path === '/') {
-      const isActiveHome = location.pathname === '/' && location.hash === '';
-      return isActiveHome ? 'text-white font-bold' : 'text-[var(--muted)] hover:text-white transition';
-    }
-
-    const isActivePath = location.pathname.startsWith(path);
-    return isActivePath ? 'text-white font-bold' : 'text-[var(--muted)] hover:text-white transition';
-  };
-
   return (
-    <header
-      className="w-full py-4 shadow-2xl fixed top-0 left-0 z-50"
-      style={{
-        background: 'rgba(15, 23, 42, 0.98)',
-        borderBottom: '1px solid rgba(255,255,255,0.1)',
-        backdropFilter: 'blur(10px)'
-      }}
-    >
-      <div className="container-max flex items-center justify-between h-8">
-        <div className="flex items-center gap-6">
-          <Link to="/" className="font-extrabold text-2xl tracking-wider" style={{ color: 'var(--accent-light)' }}>
-            PoetryHub
-          </Link>
+    <header className="sticky top-0 z-50 w-full border-b border-[#b88f42]/10 bg-[#1a1f23]/80 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 flex h-20 items-center justify-between">
+        
+        {/* Logo Section */}
+        <Link to="/" className="flex items-center gap-3 text-[#b88f42]">
+          <div className="size-6">
+            <svg fill="currentColor" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 42.4379C4 42.4379 14.0962 36.0744 24 41.1692C35.0664 46.8624 44 42.2078 44 42.2078L44 7.01134C44 7.01134 35.068 11.6577 24.0031 5.96913C14.0971 0.876274 4 7.27094 4 7.27094L4 42.4379Z"></path>
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold tracking-tight italic font-serif">PoetryHub</h2>
+        </Link>
 
-          <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
-            <Link to="/" className={getNavLinkClass('/')}>Home</Link>
-            <Link to="/poems" className={getNavLinkClass('/poems')}>Poems</Link>
-            <a href="/#about" className={getNavLinkClass('#about', true)}>About</a>
-            <a href="/#contact" className={getNavLinkClass('#contact', true)}>Contact</a>
-          </nav>
-        </div>
+        {/* Desktop Nav */}
+        <nav className="hidden md:flex items-center gap-10">
+          <Link to="/" className="text-sm font-medium text-[#e6e6e6] hover:text-[#b88f42] transition-colors">Home</Link>
+          <Link to="/poems" className="text-sm font-medium text-[#e6e6e6] hover:text-[#b88f42] transition-colors">Featured</Link>
+          <a href="/#vision" className="text-sm font-medium text-[#e6e6e6] hover:text-[#b88f42] transition-colors">Vision</a>
+          <a href="/#contact" className="text-sm font-medium text-[#e6e6e6] hover:text-[#b88f42] transition-colors">Contact</a>
+        </nav>
 
+        {/* Auth / Mobile Toggle */}
         <div className="flex items-center gap-4">
-          {loading ? (
-            <div className="text-sm text-[var(--muted)]">Checking…</div>
-          ) : isAuthenticated ? (
-            <>
-              <div className="text-sm text-[var(--muted)] hidden sm:block">Hi, {user?.username || 'Admin'}</div>
-              <button
-                onClick={handleLogout}
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold bg-[var(--accent)] text-slate-900 shadow-md hover:bg-[var(--accent-light)] transition"
-              >
-                Logout
-              </button>
-            </>
+          {isAuthenticated ? (
+            <div className="hidden md:flex items-center gap-4">
+               <span className="text-sm text-[#b88f42] italic">{user?.username}</span>
+               <button onClick={handleLogout} className="text-sm font-bold text-[#b88f42] hover:text-white transition-colors">Logout</button>
+            </div>
           ) : (
-            <Link
-              to="/admin/login"
-              className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold border border-[var(--accent)] text-white hover:bg-white/10 transition"
-            >
-              Admin Login
-            </Link>
+             <Link to="/admin/login" className="hidden md:flex min-w-[120px] cursor-pointer items-center justify-center rounded-lg h-10 px-6 border border-[#b88f42]/50 hover:bg-[#b88f42] hover:text-[#1a1f23] transition-all text-[#b88f42] text-sm font-bold">
+               Admin Login
+             </Link>
           )}
 
-          <button
-            className="md:hidden p-2 text-white/90 hover:text-white transition"
+          <button 
+            className="md:hidden text-[#b88f42]"
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            aria-label="Toggle Menu"
           >
-            {isMobileMenuOpen ? <IoCloseOutline className="h-6 w-6" /> : <IoMenuOutline className="h-6 w-6" />}
+            {isMobileMenuOpen ? <IoCloseOutline size={28} /> : <IoMenuOutline size={28} />}
           </button>
         </div>
       </div>
 
+      {/* Mobile Menu */}
       {isMobileMenuOpen && (
-        <nav
-          className=" inset-0 
-      backdrop-blur-2xl 
-      z-40 
-      p-6 
-     top-[67px] md:hidden
-    "
-          onClick={handleMobileNavClick}
-        >
-          {/* FULL COVER BACKDROP — NO PADDING */}
-          <div className="absolutere inset-0 bg-slate-900/95 backdrop-blur-xl"></div>
-
-          {/* MENU CONTENT (padding only here) */}
-          <ul className="relative flex flex-col space-y-6 p-6 text-xl">
-            <li>
-              <Link to="/" className="block py-3 px-4 bg-slate-800/70 rounded-lg">
-                Home
-              </Link>
-            </li>
-            <li>
-              <Link to="/poems" className="block py-3 px-4 bg-slate-800/70 rounded-lg">
-                Poems
-              </Link>
-            </li>
-            <li>
-              <a href="/#about" className="block py-3 px-4 bg-slate-800/70 rounded-lg">
-                About
-              </a>
-            </li>
-            <li>
-              <a href="/#contact" className="block py-3 px-4 bg-slate-800/70 rounded-lg">
-                Contact
-              </a>
-            </li>
-
-            <li className="pt-4 border-t border-white/10">
-              {isAuthenticated ? (
-                <button
-                  onClick={handleLogout}
-                  className="block w-full py-3 px-4 rounded-full font-semibold bg-[var(--accent)] text-slate-900 shadow-md"
-                >
-                  Logout ({user?.username || 'User'})
-                </button>
-              ) : (
-                <Link
-                  to="/admin/login"
-                  className="block w-full py-3 px-4 rounded-full font-semibold border border-[var(--accent)] text-white"
-                >
-                  Admin Login
-                </Link>
-              )}
-            </li>
-          </ul>
-        </nav>
+        <div className="md:hidden absolute top-20 left-0 w-full bg-[#1a1f23] border-b border-[#b88f42]/10 p-6 flex flex-col gap-6 shadow-2xl">
+          <Link to="/" className="text-lg font-medium text-[#e6e6e6]" onClick={() => setIsMobileMenuOpen(false)}>Home</Link>
+          <Link to="/poems" className="text-lg font-medium text-[#e6e6e6]" onClick={() => setIsMobileMenuOpen(false)}>Featured</Link>
+          <a href="/#vision" className="text-lg font-medium text-[#e6e6e6]" onClick={() => setIsMobileMenuOpen(false)}>Vision</a>
+          <a href="/#contact" className="text-lg font-medium text-[#e6e6e6]" onClick={() => setIsMobileMenuOpen(false)}>Contact</a>
+          <div className="border-t border-[#b88f42]/10 pt-4">
+            {isAuthenticated ? (
+               <button onClick={handleLogout} className="text-[#b88f42] font-bold">Logout</button>
+            ) : (
+               <Link to="/admin/login" className="text-[#b88f42] font-bold">Admin Login</Link>
+            )}
+          </div>
+        </div>
       )}
-
     </header>
   );
 }

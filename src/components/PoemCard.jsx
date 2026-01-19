@@ -1,61 +1,42 @@
 import React from 'react';
 
-// Environment variable for image loading base URL (must be included)
+// Environment variable for image loading base URL
 const API_BASE = import.meta.env.VITE_API_BASE || 'http://localhost:4000/api';
 
-/**
- * UPDATED: PoemCard component using Tailwind CSS to match the style of the
- * featured cards on the Home page.
- */
 export default function PoemCard({ poem, onOpen }) {
     const imgSrc = poem.imageFileId ? `${API_BASE}/uploads/${poem.imageFileId}` : null;
-    
-    // Determine the snippet for the card body (copied from Home's Featured logic)
     const bodySnippet = poem.body ? poem.body.slice(0, 120) : '';
-    const hasMore = poem.body && poem.body.length > 120;
 
     return (
-        <article 
-            key={poem._id}
-            // 1. Outer Card Container Styling (Matching Home's article tag)
+        <div 
             onClick={onOpen}
-            className="card-surface rounded-xl p-5 shadow-md hover:shadow-xl hover:scale-[1.02] transition duration-300 cursor-pointer"
+            className="group cursor-pointer bg-white/5 border border-white/10 p-8 rounded-xl hover:border-[#b88f42]/40 transition-all hover:-translate-y-2 h-full flex flex-col"
         >
-            {imgSrc && (
-                // 2. Image Styling (Matching Home's img tag)
-                <img 
-                    src={imgSrc} 
-                    alt={poem.title} 
-                    className="w-full h-48 object-cover rounded-lg mb-4 border border-[var(--card-border)]" 
-                />
-            )}
+            <div className="aspect-square w-full rounded-lg mb-6 overflow-hidden bg-slate-800 relative">
+                {imgSrc ? (
+                    <img 
+                        src={imgSrc} 
+                        alt={poem.title} 
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" 
+                    />
+                ) : (
+                    <div className="w-full h-full bg-[#15191e] flex items-center justify-center">
+                        <span className="text-[#b88f42] opacity-20 text-4xl font-serif italic">Ph.</span>
+                    </div>
+                )}
+            </div>
+
+            <h3 className="font-serif text-2xl font-bold mb-2 text-[#e6e6e6] group-hover:text-[#b88f42] transition-colors">
+                {poem.title}
+            </h3>
             
-            {/* 3. Title Styling */}
-            <h3 className="font-bold text-lg text-white truncate">{poem.title}</h3>
-            
-            {/* 4. Author Styling */}
-            <div className="text-sm text-[var(--accent)] font-serif mt-1">{poem.author}</div>
-            
-            {/* 5. Poem Snippet (copied from Home's p tag) */}
-            <p className="text-xs text-[var(--muted)] mt-3 line-clamp-3 leading-relaxed" style={{whiteSpace: 'pre-wrap'}}>
-                {bodySnippet}
-                {hasMore ? '...' : ''}
+            <p className="text-[#b88f42]/80 text-sm font-medium mb-4 italic">
+                by {poem.author}
             </p>
             
-            {/* 6. Footer/Metadata Section (Matching Home's div tag) */}
-            <div className="mt-4 flex items-center justify-between border-t border-[var(--card-border)] pt-3">
-                {/* Views */}
-                <div className="text-xs text-[var(--muted)]">Views: {poem.views || 0}</div>
-                
-                {/* Featured/Read Poem Button - Using the "Read Poem" button style for consistency */}
-                <button 
-                    onClick={(e) => { e.stopPropagation(); onOpen(poem); }} 
-                    className="text-sm font-semibold hover:text-[var(--accent-light)]" 
-                    style={{color: 'var(--accent)'}}
-                >
-                    Read Poem &rarr;
-                </button>
-            </div>
-        </article>
+            <p className="text-slate-400 font-light leading-relaxed line-clamp-3" style={{ whiteSpace: 'pre-wrap' }}>
+                {bodySnippet}...
+            </p>
+        </div>
     );
 }

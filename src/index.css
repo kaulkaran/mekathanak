@@ -1,70 +1,89 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Serif:ital,wght@0,400;0,700;1,400&display=swap');
+
 @import "tailwindcss";
 
+/* 1. Import the Fonts used in the design (Inter for body, Noto Serif for headers) */
+html, body, #root {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    overflow-x: hidden; /* Prevents horizontal scrollbars */
+}
+/* 2. Root variables updated to the new Palette */
+:root {
+  /* The new dark charcoal background */
+  --root-bg: #1a1f23;
 
-/* Root background color (single source of truth) */
-:root{
-  /* The root background remains deep navy */
-  --root-bg: #0f172a;
+  /* The new Muted Gold/Bronze accent */
+  --accent: #b88f42; 
+  --accent-light: #d4a753; 
 
-  /* Change Accent to a deeper, more refined gold/bronze for a literary feel */
-  --accent: #d4af37; /* Gold/Bronze */
-  --accent-light: #e6c75c; /* Lighter shade for hover */
+  /* Text colors */
+  --text-main: #e6e6e6;
+  --text-muted: #94a3b8;
 
-  /* Muted text color for secondary content */
-  --muted: #a3b8d4;
-
-  /* Improved Card Surface and Border */
-  --card-bg: rgba(255,255,255,0.06); /* Slightly lighter card background */
-  --card-border: rgba(255,255,255,0.1);
-  --input-bg: rgba(255,255,255,0.08); /* Better contrast for form inputs */
+  /* Card variables */
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --card-border: rgba(255, 255, 255, 0.1);
+  --input-bg: transparent;
 }
 
-/* Apply the root background to the body and ensure content area contrast */
+/* 3. Base Body Styles */
 body {
-  background: var(--root-bg);
-  /* Brighter main text color for readability */
-  color: #f1f5f9;
-  -webkit-font-smoothing:antialiased;
-  -moz-osx-font-smoothing:grayscale;
-  /* Using a classic serif font for titles/poetry (optional) and sans for body */
-  font-family: 'Merriweather', 'Georgia', serif, ui-sans-serif, system-ui, -apple-system;
+  background-color: var(--root-bg);
+  color: var(--text-main);
+  /* Default to Inter (Sans-serif) for readability */
+  font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.6;
 }
 
-h1, h2, h3, h4 {
-    /* Bold titles are easier to read on dark backgrounds */
-    font-family: 'Playfair Display', serif, 'Merriweather', Georgia;
+/* 4. Serif Font Application */
+h1, h2, h3, h4, .font-serif {
+    font-family: 'Noto Serif', serif;
 }
 
-/* Utility components */
-.container-max {
-  max-width: 1100px;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 1rem;
-  padding-right: 1rem;
+/* 5. The "Manuscript" Dot Pattern Overlay (Used in Hero) */
+.manuscript-overlay {
+    background-color: var(--root-bg);
+    background-image: radial-gradient(circle at 2px 2px, rgba(184, 143, 66, 0.05) 1px, transparent 0);
+    background-size: 40px 40px;
 }
 
-/* Redesigned Card Surface */
-.card-surface {
-  background: var(--card-bg);
-  border: 1px solid var(--card-border);
-  backdrop-filter: blur(8px); /* Slightly stronger blur */
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Subtle depth */
-}
-/* Re-styled input field for dark mode */
-.input-field {
-    background: var(--input-bg);
-    border: 1px solid var(--card-border);
-    color: #f1f5f9;
-    transition: border-color 0.2s;
-}
-.input-field:focus {
-    border-color: var(--accent-light);
-    outline: none;
+/* 6. Custom Scrollbar (to match the dark theme) */
+::-webkit-scrollbar {
+  width: 8px;
 }
 
-/* Global CSS for Anchor Link Offset */
+::-webkit-scrollbar-track {
+  background: #111418; 
+}
+
+::-webkit-scrollbar-thumb {
+  background: #333a45; 
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent); 
+}
+
+/* 7. Anchor Link Offset (For sticky header) */
 html {
-    /* Sets the scroll target position 64px from the top (adjust to match header height + margin) */
-    scroll-padding-top: 64px; 
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Matches the 20 (5rem) height of the header */
+}
+
+/* Optional: Utility for the transparent input fields */
+.input-transparent {
+    background: transparent;
+    border-bottom: 1px solid rgba(184, 143, 66, 0.3);
+    border-radius: 0;
+}
+.input-transparent:focus {
+    border-color: var(--accent);
+    outline: none;
+    box-shadow: none;
 }

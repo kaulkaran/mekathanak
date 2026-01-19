@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import api from '../services/api';
-import PoemCard from '../components/PoemCard'; // Assuming this component exists
-import PoemModal from '../components/PoemModal'; // Assuming this component exists
+import PoemCard from '../components/PoemCard'; 
+import PoemModal from '../components/PoemModal'; 
 
 export default function Poems() {
   const [poems, setPoems] = useState([]);
@@ -17,54 +17,41 @@ export default function Poems() {
   }, []);
 
   return (
-    <div className="text-white min-h-screen">
+    <div className="min-h-screen bg-[#1a1f23] text-[#e6e6e6] pt-10 pb-20 w-full">
       
-      {/* 🏞️ Hero Section/Header */}
-      <section className="bg-slate-900/50 border-b border-[var(--card-border)] py-16">
-        <div className="container-max">
-          <h1 className="text-4xl sm:text-5xl font-extrabold tracking-tight" style={{ color: 'var(--accent-light)' }}>
-            The Complete Archive
-          </h1>
-          <p className="mt-2 text-lg text-[var(--muted)]">
-            Explore every poem published on PoetryHub. Click any card to read the full text.
-          </p>
-        </div>
+      {/* Header */}
+      <section className="max-w-7xl mx-auto px-6 mb-16 text-center">
+         <span className="text-[#b88f42] uppercase tracking-widest text-xs font-bold mb-4 block">The Collection</span>
+         <h1 className="text-5xl md:text-6xl font-serif font-bold text-white mb-6">
+            Complete Archive
+         </h1>
+         <p className="text-slate-400 max-w-xl mx-auto font-light leading-relaxed">
+            Wander through the thoughts of others. Click any card to expand the manuscript.
+         </p>
       </section>
 
-      {/* 🖼️ Poems Grid Section */}
-      <section className="container-max py-12 md:py-16">
+      {/* Grid */}
+      <section className="max-w-7xl mx-auto px-6">
         
         {loading && (
-          <div className="text-center text-xl text-[var(--accent)] py-16">
-            Loading poems...
-            {/* Simple Tailwind Spinner (optional) */}
-            <div className="animate-spin h-6 w-6 border-4 border-t-[var(--accent)] border-white/20 rounded-full mx-auto mt-4"></div>
+          <div className="flex justify-center py-20">
+             <div className="animate-pulse text-[#b88f42] font-serif text-xl">Loading library...</div>
           </div>
         )}
 
         {!loading && poems.length === 0 && (
-          <div className="text-center text-xl text-[var(--muted)] py-16">
-            No poems found in the archive. Check back later!
+          <div className="text-center py-20 border border-dashed border-[#b88f42]/20 rounded-xl">
+            <p className="text-slate-500">The archive is currently empty.</p>
           </div>
         )}
         
-        {/* Responsive Grid Layout */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
           {poems.map(p => 
-            // NOTE: The 'PoemCard' component must be styled to match the aesthetic (e.g., using 'card-surface', rounded corners, and accent colors for text).
-            <PoemCard 
-              key={p._id} 
-              poem={p} 
-              onOpen={() => setSelected(p)} 
-              // Passing aesthetic classes to the card wrapper for consistency
-              className="card-surface rounded-xl p-5 shadow-md hover:shadow-xl hover:scale-[1.02] transition duration-300 cursor-pointer"
-            />
+             <PoemCard key={p._id} poem={p} onOpen={() => setSelected(p)} />
           )}
         </div>
       </section>
 
-      {/* 📖 Poem Modal */}
-      {/* NOTE: PoemModal should use a full-screen, semi-transparent backdrop and a centered, card-surface modal panel for full aesthetic effect. */}
       {selected && <PoemModal poem={selected} onClose={() => setSelected(null)} />}
     </div>
   );

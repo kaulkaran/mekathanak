@@ -7,22 +7,16 @@ import AdminLogin from './pages/admin/AdminLogin';
 import AdminDashboard from './pages/admin/AdminDashboard';
 
 export default function App() {
-  // Define a padding value to clear the fixed header (approx. 64px or 4rem)
-  const headerHeightPadding = '64px'; 
-
   return (
-    <div>
+    // 1. Wrapper: Ensures the dark background covers the whole screen height & width
+    <div className="w-full min-h-screen bg-[#1a1f23] text-[#e6e6e6]">
+      
       <Header />
-      <main 
-        // 💡 ADDED: paddingTop to offset the fixed header
-        // 💡 MODIFIED: Removed redundant 'padding: 20px' and rely on container-max/global styles for horizontal padding.
-        className="container-max" 
-        style={{ 
-          paddingTop: headerHeightPadding, 
-          maxWidth: 1100, 
-          margin: '0 auto' 
-        }}
-      >
+      
+      {/* 2. Main: REMOVED maxWidth, margin, and padding. 
+             We allow the individual pages (Home, Poems) to handle their own layout. 
+             Since Header is 'sticky', it sits in the flow, so we don't need manual padding top. */}
+      <main className="w-full">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/poems" element={<Poems />} />
@@ -31,6 +25,7 @@ export default function App() {
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>
+      
     </div>
   );
 }
