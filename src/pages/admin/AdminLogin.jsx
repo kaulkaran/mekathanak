@@ -1,4 +1,3 @@
-// src/pages/admin/AdminLogin.jsx
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../contexts/AuthContext';
@@ -6,7 +5,7 @@ import { useAuth } from '../../contexts/AuthContext';
 export default function AdminLogin() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false); // New state for better UX
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const { login, isAuthenticated } = useAuth();
   const nav = useNavigate();
 
@@ -29,68 +28,70 @@ export default function AdminLogin() {
 
   // If already authenticated, redirect to dashboard
   if (isAuthenticated) {
-    // Using replace ensures the user can't navigate back to the login page easily
-    nav('/admin/dashboard', { replace: true }); 
+    nav('/admin/dashboard', { replace: true });
     return null;
   }
 
   return (
-    // Centered container with max width for responsiveness and the card aesthetic
-    <div 
-      className="max-w-md mx-auto my-20 p-8 rounded-2xl shadow-2xl card-surface text-white" 
-    >
-      <h2 
-        className="text-3xl font-extrabold mb-8 text-center" 
-        style={{ color: 'var(--accent-light)' }}
-      >
-        Admin Login
-      </h2>
+    // 1. Full screen container to center the card perfectly
+    <div className="min-h-[80vh] w-full flex items-center justify-center px-6">
       
-      <form onSubmit={handleSubmit} className="space-y-6">
+      {/* 2. The Card Surface */}
+      <div className="w-full max-w-md bg-white/5 border border-white/10 p-10 rounded-2xl shadow-2xl backdrop-blur-sm">
         
-        {/* Email Input */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-sm font-semibold text-[var(--muted)]" htmlFor="email">
-            Email
-          </label>
-          <input 
-            id="email"
-            className="input-field w-full p-3 rounded-lg transition duration-200" 
-            type="email" 
-            value={email} 
-            onChange={e => setEmail(e.target.value)} 
-            required
-          />
-        </div>
+        {/* Header */}
+        <h2 className="text-4xl font-serif font-bold mb-10 text-center text-[#b88f42]">
+          Admin Login
+        </h2>
         
-        {/* Password Input */}
-        <div className="flex flex-col space-y-2">
-          <label className="text-sm font-semibold text-[var(--muted)]" htmlFor="password">
-            Password
-          </label>
-          <input 
-            id="password"
-            className="input-field w-full p-3 rounded-lg transition duration-200" 
-            type="password" 
-            value={password} 
-            onChange={e => setPassword(e.target.value)} 
-            required
-          />
-        </div>
+        <form onSubmit={handleSubmit} className="space-y-8">
+          
+          {/* Email Input */}
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-widest font-bold text-white/90 ml-1" htmlFor="email">
+              Email
+            </label>
+            <input 
+              id="email"
+              className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-3 py-3 transition-colors outline-none text-white placeholder-slate-600" 
+              type="email" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              required
+              placeholder="admin@poetryhub.com"
+            />
+          </div>
+          
+          {/* Password Input */}
+          <div className="space-y-2">
+            <label className="text-xs uppercase tracking-widest font-bold text-white/90 ml-1" htmlFor="password">
+              Password
+            </label>
+            <input 
+              id="password"
+              className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-3 py-3 transition-colors outline-none text-white placeholder-slate-600" 
+              type="password" 
+              value={password} 
+              onChange={e => setPassword(e.target.value)} 
+              required
+              placeholder="••••••••"
+            />
+          </div>
+          
+          {/* Submit Button */}
+          <button 
+            type="submit" 
+            disabled={isSubmitting}
+            className="w-full mt-6 px-6 py-4 rounded-full text-lg font-bold bg-[#b88f42] text-[#1a1f23] shadow-lg shadow-[#b88f42]/20 hover:scale-[1.02] hover:bg-[#d4a753] transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+          >
+            {isSubmitting ? 'Verifying...' : 'Log In'}
+          </button>
+        </form>
         
-        {/* Submit Button */}
-        <button 
-          type="submit" 
-          disabled={isSubmitting}
-          className="w-full mt-6 px-6 py-3 rounded-full text-lg font-semibold bg-[var(--accent)] text-slate-900 shadow-md hover:bg-[var(--accent-light)] transition disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {isSubmitting ? 'Logging in...' : 'Log In'}
-        </button>
-      </form>
-      
-      <p className="mt-8 text-center text-xs text-[var(--muted)]">
-        This portal is for administrators only.
-      </p>
+        <p className="mt-8 text-center text-xs text-slate-500 uppercase tracking-widest font-medium">
+          This portal is for administrators only.
+        </p>
+      </div>
     </div>
   );
 }
