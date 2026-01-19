@@ -199,84 +199,106 @@ function Sidebar({ active, setActive, isMobile, isOpen, setIsOpen }) {
 }
 
 // --- Poem Creation Component (unchanged) ---
+// ... existing imports
+
+// --- Poem Creation Component (UPDATED) ---
 function CreatePoem({ form, setForm, handleCreate, loading }) {
-    const onFile = (e) => {
-        setForm(f => ({ ...f, image: e.target.files[0] }));
-    };
-    
-    return (
-        <section className="card-surface rounded-2xl p-8 shadow-xl">
-            <h3 className="text-3xl font-bold mb-6" style={{ color: 'var(--accent)' }}>New Poem Entry</h3>
-            <form onSubmit={handleCreate}>
-              <FormRow label="Title">
-                <input 
-                  className="input-field p-3 rounded-lg" 
-                  type="text" 
-                  value={form.title} 
-                  onChange={e=>setForm({...form, title:e.target.value})} 
-                  required 
-                />
-              </FormRow>
-              <FormRow label="Author">
-                <input 
-                  className="input-field p-3 rounded-lg" 
-                  type="text" 
-                  value={form.author} 
-                  onChange={e=>setForm({...form, author:e.target.value})} 
-                />
-              </FormRow>
-              <FormRow label="Body">
-                <textarea 
-                  className="input-field p-3 rounded-lg" 
-                  rows={8} 
-                  value={form.body} 
-                  onChange={e=>setForm({...form, body:e.target.value})} 
-                  required 
-                />
-              </FormRow>
-              <FormRow label="Tags (JSON array)">
-                <input 
-                  className="input-field p-3 rounded-lg" 
-                  type="text" 
-                  placeholder='e.g., ["love", "nature"]'
-                  value={form.tags} 
-                  onChange={e=>setForm({...form, tags:e.target.value})} 
-                />
-              </FormRow>
+    const onFile = (e) => {
+        setForm(f => ({ ...f, image: e.target.files[0] }));
+    };
+    
+    return (
+        <section className="bg-transparent max-w-4xl mx-auto"> 
+            {/* Header matching the image */}
+            <h3 className="text-3xl font-serif font-bold mb-10 text-[#b88f42]">New Poem Entry</h3>
+            
+            <form onSubmit={handleCreate} className="space-y-12">
+              
+              {/* Title Input - Minimalist */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-white block">Title</label>
+                <input 
+                  className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 text-white placeholder-slate-600 transition-colors outline-none text-lg" 
+                  type="text" 
+                  value={form.title} 
+                  onChange={e=>setForm({...form, title:e.target.value})} 
+                  required 
+                  placeholder="The Road Not Taken"
+                />
+              </div>
 
-              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 border-t border-[var(--card-border)] pt-4">
-                <label className="flex items-center gap-2 text-white/90 cursor-pointer mb-4 sm:mb-0">
-                  <input 
-                    type="checkbox" 
-                    checked={form.isFeatured} 
-                    onChange={e=>setForm({...form, isFeatured:e.target.checked})} 
-                    className="h-4 w-4 rounded border-gray-600 bg-white/10 text-[var(--accent)] focus:ring-[var(--accent)]"
-                  /> 
-                  Feature on Homepage
-                </label>
-                <div className="flex flex-col">
-                  <FormRow label="Image (Optional)">
-                    <input 
-                      type="file" 
-                      accept="image/*" 
-                      onChange={onFile} 
-                      className="text-sm text-[var(--muted)] file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-[var(--accent)] file:text-slate-900 hover:file:bg-[var(--accent-light)] transition"
-                    />
-                  </FormRow>
-                </div>
-              </div>
+              {/* Author Input - Minimalist */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-white block">Author</label>
+                <input 
+                  className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 text-white placeholder-slate-600 transition-colors outline-none text-lg" 
+                  type="text" 
+                  value={form.author} 
+                  onChange={e=>setForm({...form, author:e.target.value})} 
+                  placeholder="Robert Frost"
+                />
+              </div>
 
-              <button 
-                className="w-full mt-4 px-6 py-3 rounded-full text-lg font-semibold bg-[var(--accent)] text-slate-900 shadow-md hover:bg-[var(--accent-light)] transition disabled:opacity-50 disabled:cursor-not-allowed" 
-                type="submit" 
-                disabled={loading}
-              >
-                {loading ? 'Creating...' : 'Create Poem'}
-              </button>
-            </form>
-        </section>
-    );
+              {/* Body Textarea - Minimalist */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-white block">Body</label>
+                <textarea 
+                  className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 text-white placeholder-slate-600 transition-colors outline-none resize-none text-lg leading-relaxed font-serif" 
+                  rows={10} 
+                  value={form.body} 
+                  onChange={e=>setForm({...form, body:e.target.value})} 
+                  required 
+                  placeholder="Two roads diverged in a yellow wood..."
+                />
+              </div>
+
+              {/* Tags Input - Minimalist */}
+              <div className="space-y-2">
+                <label className="text-sm font-bold text-white block">Tags (JSON array)</label>
+                <input 
+                  className="w-full bg-transparent border-b border-[#b88f42]/30 focus:border-[#b88f42] focus:ring-0 px-0 py-3 text-white placeholder-slate-600 transition-colors outline-none text-sm font-mono" 
+                  type="text" 
+                  placeholder='["nature", "classic"]'
+                  value={form.tags} 
+                  onChange={e=>setForm({...form, tags:e.target.value})} 
+                />
+              </div>
+
+              {/* Footer Controls */}
+              <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center pt-8 border-t border-white/5">
+                <label className="flex items-center gap-3 text-white/90 cursor-pointer mb-6 sm:mb-0 hover:text-[#b88f42] transition">
+                  <input 
+                    type="checkbox" 
+                    checked={form.isFeatured} 
+                    onChange={e=>setForm({...form, isFeatured:e.target.checked})} 
+                    className="h-5 w-5 rounded border-gray-600 bg-white/5 text-[#b88f42] focus:ring-[#b88f42]"
+                  /> 
+                  <span className="font-medium">Feature on Homepage</span>
+                </label>
+                
+                <div className="flex flex-col sm:flex-row gap-6 w-full sm:w-auto items-center">
+                  {/* File Input */}
+                  <label className="cursor-pointer text-sm text-slate-400 hover:text-white transition flex items-center gap-2">
+                     <span className="material-symbols-outlined text-lg">image</span> 
+                     {form.image ? 'Image Selected' : 'Upload Cover Image'}
+                     <input type="file" accept="image/*" onChange={onFile} className="hidden" />
+                  </label>
+
+                  <button 
+                    className="w-full sm:w-auto px-10 py-3 rounded-full text-lg font-bold bg-[#b88f42] text-[#1a1f23] shadow-lg hover:bg-[#d4a753] transition disabled:opacity-50 disabled:cursor-not-allowed" 
+                    type="submit" 
+                    disabled={loading}
+                  >
+                    {loading ? 'Saving...' : 'Publish Poem'}
+                  </button>
+                </div>
+              </div>
+            </form>
+        </section>
+    );
 }
+
+// ... rest of the file remains unchanged
 
 // --- Poem Management Component (unchanged) ---
 function ManagePoems({ poems, handleDelete, setPoemToDelete, setPoemToView, loading }) {
